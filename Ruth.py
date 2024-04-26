@@ -24,7 +24,7 @@ ventasProductoDF = jsonDF.groupBy("product_id").count()
 top10Productos = ventasProductoDF.orderBy(desc("count")).limit(10)
 top10Productos.show()
 
-#2. Calcular la cantidad total de ventas
+#2 Porcentaje de compra de cada tipo de producto (item_type)
 totalVentas = jsonDF.count()
 ventasPorTipoProducto = jsonDF.groupBy("item_type").agg(count("*").alias("cuenta_ventas"))
 ventasPorTipoProducto = ventasPorTipoProducto.withColumn("porcentaje", (col("cuenta_ventas") / totalVentas) * 100)
