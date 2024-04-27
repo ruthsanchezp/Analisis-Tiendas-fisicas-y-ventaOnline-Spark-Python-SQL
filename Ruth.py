@@ -74,13 +74,20 @@ paypal_ventas = df_ventas.filter(col("payment_type") == "paypal")
 uso_paypal = paypal_ventas.groupBy("Area").count().orderBy(col("count").desc())
 uso_paypal.show(1)
 
+#8.	Indicar los productos que no tienen stock suficiente para las compras realizadas.
+
+fcruce = dfventa.groupBy(col("product_id")).count().join(dfstock, on="product_id", how="left")
+dfcruce = dfcruce.withColumn("sin_stock",
+                             when(col("quantity") < col("count"), True).otherwise(False)
+                             )
+dfcruce.filter(col("sin_stock") == True).show()
 
 
 
 # Con SQL
 jsonDF.createOrReplaceTempView("venta")
 
-# 1. 10 productos más vendidos
+#1. 10 productos más vendidos
 top10ProductosSQL = spark.sql("""
     SELECT product_id, COUNT(*) as total_ventas
     FROM venta
@@ -91,6 +98,7 @@ top10ProductosSQL = spark.sql("""
 top10ProductosSQL.show()
 
 # 2. Calcular la cantidad total de ventas y las ventas por tipo de producto con porcentaje
+
 totalVentasSQL = spark.sql("SELECT COUNT(*) as total_ventas FROM venta").collect()[0]["total_ventas"]
 ventasPorTipoProductoSQL = spark.sql(f"""
     SELECT item_type, COUNT(*) as cuenta_ventas, (COUNT(*) / {totalVentasSQL} * 100) as porcentaje
@@ -118,6 +126,7 @@ top3ProductosPorTipoSQL.show()
 
 
 # 4. Obtener los productos que son más caros que la media del precio de los productos
+
 productosCarosSQL = spark.sql("""
     SELECT *, price
     FROM venta
@@ -150,7 +159,9 @@ spark.sql(""
 
 
 #7. Dividir el mundo en áreas geográficas
+
 # ¿En qué área se utiliza más PayPal?
+
 spark.sql("""
 SELECT Area, product_id, total_ventas, rank
 FROM (
