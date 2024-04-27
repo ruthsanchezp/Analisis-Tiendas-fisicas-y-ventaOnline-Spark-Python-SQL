@@ -11,16 +11,19 @@ spark = SparkSession.builder.appName("ActGrupal").getOrCreate()
 dfstock = spark.read\
     .option("header","true")\
     .option("inferSchema", "true")\
-    .csv("F:/Alumno-105/PycharmProjects/MasterBDDS/stock.csv")
+   # .csv("F:/Alumno-105/PycharmProjects/MasterBDDS/stock.csv")  ## Ruta Ruth
+   # .csv(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\stock.csv")  ## Ruta Miguel
 
-dfventa = spark.read.json("F:/Alumno-105/PycharmProjects/MasterBDDS/purchases.json")
+
+#dfventa = spark.read.json("F:/Alumno-105/PycharmProjects/MasterBDDS/purchases.json") ## Ruta Ruth
+#dfventa = spark.read.json(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\purchases.json") ## Ruta Miguel
 
 dfventa.createOrReplaceTempView("venta")
 
 
 #1. 10 productos más comprados
 
-##Con la API
+#API
 
 print("Con la API - Los 10 productos màs comprados")
 
@@ -28,7 +31,7 @@ ventasProductoDF = dfventa.groupBy("product_id").count()
 top10Productos = ventasProductoDF.orderBy(desc("count")).limit(10)
 top10Productos.show()
 
-##Con SQL
+#SQL
 
 print("Con SQL - Los 10 productos màs comprados")
 
@@ -43,7 +46,8 @@ top10ProductosSQL.show()
 
 #2 Porcentaje de compra de cada tipo de producto (item_type)
 
-##Con la API
+#API
+
 print("Con la API - Porcentaje de compra de cada tipo de producto")
 
 totalVentas = dfventa.count()
@@ -51,7 +55,8 @@ ventasPorTipoProducto = dfventa.groupBy("item_type").agg(count("*").alias("cuent
 ventasPorTipoProducto = ventasPorTipoProducto.withColumn("porcentaje", (col("cuenta_ventas") / totalVentas) * 100)
 ventasPorTipoProducto.show()
 
-##Con SQL
+#SQL
+
 print("Con SQL - Porcentaje de compra de cada tipo de producto")
 
 totalVentasSQL = spark.sql("SELECT COUNT(*) as total_ventas FROM venta").collect()[0]["total_ventas"]
@@ -65,7 +70,8 @@ ventasPorTipoProductoSQL.show()
 
 #3. Obtener los 3 productos mas comprados por cada tipo de producto
 
-# Con la API
+#API
+
 print("Con la API - 3 productos mas comprados por cada tipo de producto")
 
 ventasPorProductoYTipo = dfventa.groupBy("item_type", "product_id").count().withColumnRenamed("count", "cuenta_ventas")
@@ -74,7 +80,7 @@ ventasPorProductoYTipo = ventasPorProductoYTipo.withColumn("rango", row_number()
 top3ProductosPorTipo = ventasPorProductoYTipo.filter(col("rango") <= 3)
 top3ProductosPorTipo.show()
 
-#Con SQL
+#SQL
 
 print("Con SQL - 3 productos mas comprados por cada tipo de producto")
 
@@ -96,7 +102,7 @@ top3ProductosPorTipoSQL.show()
 
 #4 Obtener los productos que son más caros que la media del precio de los productos.
 
-#Con la API
+#API
 
 print("Con la API - Productos que son más caros que la media del precio de los productos")
 
@@ -104,9 +110,9 @@ precioMedio = dfventa.agg(avg("price").alias("precio_promedio")).first()["precio
 productosCaros = dfventa.filter(col("price") > precioMedio).orderBy(desc("price"))
 productosCaros.show()
 
-# Con SQL
+#SQL
 
-print("Con la SQL - Productos que son más caros que la media del precio de los productos")
+print("Con SQL - Productos que son más caros que la media del precio de los productos")
 
 productosCarosSQL = spark.sql("""
     SELECT *, price
@@ -118,6 +124,7 @@ productosCarosSQL.show()
 
 
 #5.	Indicar la tienda que ha vendido más productos.
+
 #API
 
 print("Con la API - La tienda que ha vendido más productos.")
@@ -127,7 +134,8 @@ toptienda = toptienda.orderBy(col("count").desc())
 toptienda.show(1)
 
 #SQL
-print("Con la SQL - La tienda que ha vendido más productos.")
+
+print("Con SQL - La tienda que ha vendido más productos.")
 
 spark.sql(""
           "SELECT shop_id, COUNT(*) AS total_productos "
@@ -144,6 +152,7 @@ toptiendafact = toptiendafact.orderBy(col("total_facturado").desc())
 toptiendafact.show(1)
 
 #SQL
+
 print("Con SQL - La tienda que ha facturado mas dinero.")
 
 spark.sql(""
@@ -154,7 +163,9 @@ spark.sql(""
 
 #7. Dividir el mundo en áreas geográficas
 # ¿En qué área se utiliza más PayPal?
+
 #API
+
 print("Con la API - Area en que se utiliza mas PayPal")
 
 df_ventas = dfventa.withColumn(
@@ -171,6 +182,7 @@ uso_paypal = paypal_ventas.groupBy("Area").count().orderBy(col("count").desc())
 uso_paypal.show(1)
 
 #SQL
+
 print("Con SQL - Area en que se utiliza mas PayPal")
 
 spark.sql("""
@@ -192,21 +204,20 @@ ORDER BY total_paypal DESC
 LIMIT 1
 """).show(1)
 
-#7. ¿Cuáles son los 3 productos más comprados en cada área?
+# ¿Cuáles son los 3 productos más comprados en cada área?
+
 #API
+
 print("Con la API - 3 productos más comprados en cada área")
 
 ventas_por_producto_area = df_ventas.groupBy("Area", "product_id").count()
-
 windowSpec = Window.partitionBy("Area").orderBy(col("count").desc())
-
 ranked_ventas = ventas_por_producto_area.withColumn("rank", rank().over(windowSpec))
-
 top3_productos_area = ranked_ventas.filter(col("rank") <= 3)
-
 top3_productos_area.show()
 
 #SQL
+
 print("Con la SQL - 3 productos más comprados en cada área")
 
 spark.sql("""
@@ -230,7 +241,8 @@ WHERE rank <= 3
 """
 ).show()
 
-#7. ¿Qué área ha facturado menos dinero?
+# ¿Qué área ha facturado menos dinero?
+
 #API
 
 print("Con la API - Àrea que ha facturado menos dinero")
@@ -262,7 +274,9 @@ LIMIT 1
 
 
 #8.	Indicar los productos que no tienen stock suficiente para las compras realizadas.
+
 #API
+
 print("Con la API - productos que no tienen stock suficiente")
 dfcruce = dfventa.groupBy(col("product_id")).count().join(dfstock, on="product_id", how="left")
 dfcruce = dfcruce.withColumn("sin_stock",
