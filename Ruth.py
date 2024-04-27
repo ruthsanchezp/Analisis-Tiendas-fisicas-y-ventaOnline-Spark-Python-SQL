@@ -1,9 +1,9 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import desc, count, col, row_number, avg, when, sum as sum, asc
+from pyspark.sql.functions import desc, count, col, row_number, avg, when, sum as sum, asc, rank
 from pyspark.sql.window import Window
 from pyspark import SparkContext
-from itertools import count
-from pyspark.sql.functions import rank
+#Sfrom itertools import count
+
 
 
 
@@ -13,9 +13,9 @@ spark = SparkSession.builder.appName("ActGrupal").getOrCreate()
 dfstock = spark.read\
     .option("header","true")\
     .option("inferSchema", "true")\
-    .csv(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\stock.csv")
+    .csv("F:/Alumno-105/PycharmProjects/MasterBDDS/stock.csv")
 
-dfventa = spark.read.json(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\purchases.json")
+dfventa = spark.read.json("F:/Alumno-105/PycharmProjects/MasterBDDS/purchases.json")
 
 
 ##Con la API
@@ -76,7 +76,7 @@ uso_paypal.show(1)
 
 #8.	Indicar los productos que no tienen stock suficiente para las compras realizadas.
 
-fcruce = dfventa.groupBy(col("product_id")).count().join(dfstock, on="product_id", how="left")
+dfcruce = dfventa.groupBy(col("product_id")).count().join(dfstock, on="product_id", how="left")
 dfcruce = dfcruce.withColumn("sin_stock",
                              when(col("quantity") < col("count"), True).otherwise(False)
                              )
@@ -85,7 +85,7 @@ dfcruce.filter(col("sin_stock") == True).show()
 
 
 # Con SQL
-jsonDF.createOrReplaceTempView("venta")
+dfventa.createOrReplaceTempView("venta")
 
 #1. 10 productos más vendidos
 top10ProductosSQL = spark.sql("""
@@ -130,7 +130,7 @@ top3ProductosPorTipoSQL.show()
 productosCarosSQL = spark.sql("""
     SELECT *, price
     FROM venta
-    WHERE price > (SELECT AVG(price) FROM ventas)
+    WHERE price > (SELECT AVG(price) FROM venta)
     ORDER BY price DESC
 """)
 productosCarosSQL.show()
