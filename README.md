@@ -14,7 +14,7 @@ La empresa recibe diariamente un archivo llamado `purchases.json` con las compra
 
 ## Tareas a Resolver
 
-El programa Spark debe resolver las siguientes tareas:
+El programa Spark debe resuelve las siguientes tareas:
 
 1. **Los 10 productos más comprados.**
 2. **Porcentaje de compra de cada tipo de producto (item_type).**
@@ -27,13 +27,8 @@ El programa Spark debe resolver las siguientes tareas:
     - ¿Cuáles son los 3 productos más comprados en cada área?
     - ¿Qué área ha facturado menos dinero?
 8. **Indicar los productos que no tienen stock suficiente para las compras realizadas.**
-
 ## Métodos de Resolución
 
-Se debe responder a las preguntas utilizando tanto el DataFrame API como el lenguaje SQL.
-
-## Consideraciones Importantes
-
-- Los datos se han generado de forma aleatoria.
-- Se debe implementar el programa en Python utilizando Spark 2.x.
+Se responde a las preguntas utilizando tanto el DataFrame API como el lenguaje SQL.
+Se implementa python utilizando Spark 2.x.
 
