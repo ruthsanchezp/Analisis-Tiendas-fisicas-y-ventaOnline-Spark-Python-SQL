@@ -1,4 +1,4 @@
-# Proyecto de Análisis de Datos para Empresa de Retail
+# Proyecto de Análisis de Datos para Empresa de Retail, Tiendas físicas y venta online
 
 Este repositorio contiene un programa Spark 2.x desarrollado en Python para analizar datos de compras y stock de una empresa del sector del Retail. La empresa tiene presencia a nivel mundial, con sede en España, y opera tanto en tiendas físicas como en venta online.
 
