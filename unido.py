@@ -11,12 +11,12 @@ spark = SparkSession.builder.appName("ActGrupal").getOrCreate()
 dfstock = spark.read\
     .option("header","true")\
     .option("inferSchema", "true")\
-   # .csv("F:/Alumno-105/PycharmProjects/MasterBDDS/stock.csv")  ## Ruta Ruth
-   # .csv(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\stock.csv")  ## Ruta Miguel
+   # .csv("F:/Alumno-105/PycharmProjects/BDDS/stock.csv")  ##
+   # .csv(r"F:\Alumno-102\PycharmProjects\BDDS\pythonProject1\stock.csv")  ## 
 
 
-#dfventa = spark.read.json("F:/Alumno-105/PycharmProjects/MasterBDDS/purchases.json") ## Ruta Ruth
-#dfventa = spark.read.json(r"F:\Alumno-102\PycharmProjects\MasterBDDS\pythonProject1\purchases.json") ## Ruta Miguel
+#dfventa = spark.read.json("F:/Alumno-105/PycharmProjects/BDDS/purchases.json")
+#dfventa = spark.read.json(r"F:\Alumno-102\PycharmProjects\BDDS\pythonProject1\purchases.json") 
 
 dfventa.createOrReplaceTempView("venta")
 
